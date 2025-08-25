@@ -1,0 +1,8 @@
+# Các file dự án Code::Blocks giữ CRLF
+*.cbp text eol=crlf
+*.layout text eol=crlf
+
+# File code C/C++ giữ LF (chuẩn code đa nền tảng)
+*.c text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
