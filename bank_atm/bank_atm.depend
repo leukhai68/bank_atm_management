@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1756138614 source:c:\users\os\onedrive\desktop\b24dcat132_leuquangkhai\bank_atm_management\bank_atm\main.cpp
+	<iostream>
+	<fstream>
+	<conio.h>
+	<string>
+	<stdio.h>
+	<windows.h>
+
