@@ -7,10 +7,16 @@
 using namespace std;
 
 class bank{
+private:
+    int pin;
+    float balance;
+    string id, pass, name, fname, address, phone;
+
 public:
     void menu();
     void bank_quanli();
     void atm_quanli();
+    void new_user();
 };
 void bank::menu(){
     p:
@@ -82,6 +88,7 @@ void bank::bank_quanli(){
     cin >> choice;
     switch(choice){
     case 1:
+
         break;
     case 2:
         break;
@@ -133,6 +140,45 @@ void bank::atm_quanli(){
     }
     getch();
     goto p;
+}
+void bank::new_user(){
+    p:
+    system("cls");
+    fstream file;
+    int p;
+    float b;
+    string n,f,pa,a,ph,i;
+    cout << "\n\n\t\t\tAdd New User";
+    cout << "\n\n User ID : ";
+    cin >> id;
+    cout << "\n\n\t\tName : ";
+    cin >> name;
+    cout << "\n\n Father Name : ";
+    cin >> fname;
+    cout << "\n\n\t\tAddress : ";
+    cin >> address;
+    cout << "\n\n Pin Code 6 numbers : ";
+    cin >> pin;
+    cout << "\n\n\t\tPassword : ";
+    cin >> pass;
+    cout << "\n\n Phone No. : ";
+    cin >> phone;
+    cout << "\n\n\t\t Current Balance : ";
+    cin >> balance;
+    file.open("bank.txt", ios::in);
+    if(file == 0){
+        file.open("bank.txt", iso::app|ios::out);
+        file << " " << id << " " name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << balance << "\n';
+        file.close();
+    }else{
+        file >> i >> n >> f >> a >> p >> pa >> ph >> b;
+        while(file.open == 0){
+            if(i == id) cout << "\n\n User Id Already Exist...";
+            getch();
+            goto p;
+        }
+    }
+
 }
 int main()
 {
