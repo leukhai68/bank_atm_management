@@ -15,16 +15,14 @@ private:
 public:
     void menu();
     void bank_quanli();
-    void atm_quanli();
     void new_user();
 };
 void bank::menu(){
     p:
     system("cls"); // clear screen -> tác dụng xoá sạch màn hình console
-    cout << "\n\n\t\t\tControl Panel";
+    cout << "\n\n\t\t\t";
     cout << "\n\n 1.Bank Management";
-    cout << "\n 2.ATM Management";
-    cout << "\n 3.Exit";
+    cout << "\n 2.Exit";
     cout << "\n\n Enter your choice : ";
     int choice;
     cin >> choice;
@@ -48,7 +46,7 @@ void bank::menu(){
             pass += ch;
             cout << "*";
         }
-        if(email == "khaikevin2006@gmail.com" && pin == "123456" && pass == "123456"){
+        if(email == "khaikevin" && pin == "123456" && pass == "123456"){
             bank_quanli();
         }
         else{
@@ -57,9 +55,6 @@ void bank::menu(){
         break;
     }
     case 2:
-        atm_quanli();
-        break;
-    case 3:
         exit(0);
     default:
         cout << "\n\n Invalid...Try again!!!";
@@ -72,23 +67,23 @@ void bank::bank_quanli(){
     system("cls");
     int choice;
     cout << "\n\n\t\t\tBank Management System";
-    cout << "\n\n 1. New User";
-    cout << "\n 2. Already User";
-    cout << "\n 3. Deposit Option";
-    cout << "\n 4. Withdraw Option";
-    cout << "\n 5. Transfer Option";
-    cout << "\n 6. Payment Option";
-    cout << "\n 7. Search User Record";
-    cout << "\n 8. Edit User Record";
-    cout << "\n 9. Delete User Record";
-    cout << "\n 10. Show All Records";
-    cout << "\n 11. Transfer Option";
-    cout << "\n 12. Go Back";
+    cout << "\n\n 1. New User";  // tạo tài khoản
+    cout << "\n 2. Already User";  // tài khoản cũ
+    cout << "\n 3. Deposit Option";  // gửi tiền
+    cout << "\n 4. Withdraw Option"; // rút tiền
+    cout << "\n 5. Transfer Option"; // chuyển tiền
+    cout << "\n 6. Payment Option"; // thanh toán
+    cout << "\n 7. Search User Record";  // tìm kiếm tài khoản
+    cout << "\n 8. Edit User Record"; // chỉnh sửa tài khoản
+    cout << "\n 9. Delete User Record"; // xoá tài khoản
+    cout << "\n 10. Show All Records"; // hiển thị tất cả tài khoản
+    cout << "\n 11. Transfer Option"; // chuyển tiền
+    cout << "\n 12. Go Back"; // quay lại menu
     cout << "\n\n Enter your choice: ";
     cin >> choice;
     switch(choice){
     case 1:
-
+        new_user();
         break;
     case 2:
         break;
@@ -116,31 +111,7 @@ void bank::bank_quanli(){
         cout << "\n\n Invalid...Try again!!!";
     }
 }
-void bank::atm_quanli(){
-    p:
-    system("cls");
-    int choice;
-    cout << "\n\n\t\t\tATM Management System";
-    cout << "\n\n 1. User Login and Check Balance";
-    cout << "\n 2. Withdraw Amount";
-    cout << "\n 3. Account Detailes";
-    cout << "\n 4. Go back";
-    cin >> choice;
-    switch(choice){
-    case 1:
-        break;
-    case 2:
-        break;
-    case 3:
-        break;
-    case 4:
-        menu();
-    default:
-        cout << "\n\n Invalid...Try again!!!";
-    }
-    getch();
-    goto p;
-}
+
 void bank::new_user(){
     p:
     system("cls");
@@ -152,11 +123,13 @@ void bank::new_user(){
     cout << "\n\n User ID : ";
     cin >> id;
     cout << "\n\n\t\tName : ";
-    cin >> name;
+    cin.ignore();
+    getline(cin, name);
     cout << "\n\n Father Name : ";
-    cin >> fname;
+    getline(cin, fname);
     cout << "\n\n\t\tAddress : ";
-    cin >> address;
+    cin.ignore();
+    getline(cin,address);
     cout << "\n\n Pin Code 6 numbers : ";
     cin >> pin;
     cout << "\n\n\t\tPassword : ";
@@ -166,19 +139,46 @@ void bank::new_user(){
     cout << "\n\n\t\t Current Balance : ";
     cin >> balance;
     file.open("bank.txt", ios::in);
-    if(file == 0){
-        file.open("bank.txt", iso::app|ios::out);
-        file << " " << id << " " name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << balance << "\n';
+    if(!file){   // kiểm tra file đã mở chưa
+    // trường hợp file chưa tồn tại thì tạo file mới và ghi dữ liệu vào
+        file.open("bank.txt", ios::app | ios::out);
+        file << id << '|' << name << '|' << fname << '|' << address << '|'<< pin << '|' << pass << '|' << phone << '|' << balance << "\n";
         file.close();
     }else{
-        file >> i >> n >> f >> a >> p >> pa >> ph >> b;
-        while(file.open == 0){
-            if(i == id) cout << "\n\n User Id Already Exist...";
-            getch();
-            goto p;
-        }
-    }
+        // trường hợp file đã có thì kiếm tra id đã có chưa
+        getline(file, i, '|');
+        getline(file, n, '|');
+        getline(file, f, '|');
+        getline(file, a, '|');
+        file >> p;
+        file.ignore(); // bỏ ký tự phân cách
+        getline(file, pa, '|');
+        getline(file, ph, '|');
+        file >> b;
 
+        while(!file.eof()){
+            if(i == id){
+                cout << "\n\n User Id Already Exist...";
+                getch();
+                goto p;
+            }
+            getline(file, i, '|');
+            getline(file, n, '|');
+            getline(file, f, '|');
+            getline(file, a, '|');
+            file >> p;
+            file.ignore(); // bỏ ký tự phân cách
+            getline(file, pa, '|');
+            getline(file, ph, '|');
+            file >> b;
+        }
+        file.close();
+        // nếu không bị trùng id thì ghi dữ liệu vào file
+        file.open("bank.txt", ios::app | ios::out);
+        file << id << '|' << name << '|' << fname << '|' << address << '|'<< pin << '|' << pass << '|' << phone << '|' << balance << "\n";
+        file.close();
+    }
+    cout << "\n\n New User Account Created Successfully";
 }
 int main()
 {
