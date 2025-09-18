@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream>
+#include <fstream> // thư viện dùng để đọc ghi file
 #include <conio.h> // để dùng getch()
 #include <string>
 #include <stdio.h>
@@ -16,6 +16,8 @@ public:
     void menu();
     void bank_quanli();
     void new_user();
+    void alrady_user();
+    void deposit_option();
 };
 void bank::menu(){
     p:
@@ -78,7 +80,7 @@ void bank::bank_quanli(){
     cout << "\n 9. Delete User Record"; // xoá tài khoản
     cout << "\n 10. Show All Records"; // hiển thị tất cả tài khoản
     cout << "\n 11. Transfer Option"; // chuyển tiền
-    cout << "\n 12. Go Back"; // quay lại menu
+    cout << "\n 12. Go Back"; // quay lại menu 
     cout << "\n\n Enter your choice: ";
     cin >> choice;
     switch(choice){
@@ -86,6 +88,7 @@ void bank::bank_quanli(){
         new_user();
         break;
     case 2:
+        alrady_user();
         break;
     case 3:
         break;
@@ -179,6 +182,45 @@ void bank::new_user(){
         file.close();
     }
     cout << "\n\n New User Account Created Successfully";
+}
+void bank::alrady_user(){
+    system("cls");
+    fstream file;
+    string t_id;
+    int found = 0;
+    cout << "\n\n\t\t\tAlready User Account";
+    file.open("bank.txt", ios::in);
+    if(!file){
+        cout << "\n\n File Opening Error...";
+    }else{
+        cout << "\n\n User ID: ";
+        cin >> t_id;
+        string id, name, fname, address, pin, pass, phone, balance;
+        while(getline(file, id, '|')){
+            getline(file, name, '|');
+            getline(file, fname, '|');
+            getline(file, address, '|');
+            getline(file, pin, '|');
+            getline(file, pass, '|');
+            getline(file, phone, '|');
+            getline(file, balance, '\n'); // đọc đến hết dòng
+            if(t_id == id){
+                system("cls");
+                cout << "\n\n Already User Account";
+                cout << "\n\n User ID : " << id << "   Pin Code : " << pin << "   Password : " << pass;
+                found = 1;
+                break;
+            }
+        }
+        file.close();
+        if(found == 0){
+            cout << "\n\n User ID Not Found...";
+        }
+    }
+}
+
+void bank::deposit_option(){
+    
 }
 int main()
 {
