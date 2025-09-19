@@ -4,6 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <windows.h>
+#include <limits>
 using namespace std;
 
 class bank{
@@ -80,7 +81,7 @@ void bank::bank_quanli(){
     cout << "\n 9. Delete User Record"; // xoá tài khoản
     cout << "\n 10. Show All Records"; // hiển thị tất cả tài khoản
     cout << "\n 11. Transfer Option"; // chuyển tiền
-    cout << "\n 12. Go Back"; // quay lại menu 
+    cout << "\n 12. Go Back"; // quay lại menu
     cout << "\n\n Enter your choice: ";
     cin >> choice;
     switch(choice){
@@ -119,20 +120,16 @@ void bank::new_user(){
     p:
     system("cls");
     fstream file;
-    int p;
-    float b;
-    string n,f,pa,a,ph,i;
     cout << "\n\n\t\t\tAdd New User";
     cout << "\n\n User ID : ";
     cin >> id;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // dọn Enter 1 lần duy nhất
     cout << "\n\n\t\tName : ";
-    cin.ignore();
     getline(cin, name);
     cout << "\n\n Father Name : ";
     getline(cin, fname);
     cout << "\n\n\t\tAddress : ";
-    cin.ignore();
-    getline(cin,address);
+    getline(cin, address);  // KHÔNG ignore thêm ở đây
     cout << "\n\n Pin Code 6 numbers : ";
     cin >> pin;
     cout << "\n\n\t\tPassword : ";
@@ -141,48 +138,32 @@ void bank::new_user(){
     cin >> phone;
     cout << "\n\n\t\t Current Balance : ";
     cin >> balance;
+    // --- kiểm tra trùng id, chỉ đọc token đầu rồi bỏ phần còn lại của dòng ---
     file.open("bank.txt", ios::in);
-    if(!file){   // kiểm tra file đã mở chưa
-    // trường hợp file chưa tồn tại thì tạo file mới và ghi dữ liệu vào
-        file.open("bank.txt", ios::app | ios::out);
-        file << id << '|' << name << '|' << fname << '|' << address << '|'<< pin << '|' << pass << '|' << phone << '|' << balance << "\n";
-        file.close();
-    }else{
-        // trường hợp file đã có thì kiếm tra id đã có chưa
-        getline(file, i, '|');
-        getline(file, n, '|');
-        getline(file, f, '|');
-        getline(file, a, '|');
-        file >> p;
-        file.ignore(); // bỏ ký tự phân cách
-        getline(file, pa, '|');
-        getline(file, ph, '|');
-        file >> b;
-
-        while(!file.eof()){
+    if(file){
+        string i;
+        while (file >> i){ // lấy đúng token đầu là ID
+            file.ignore(numeric_limits<streamsize>::max(), '\n'); // bỏ phần còn lại (tên/địa chỉ...)
             if(i == id){
                 cout << "\n\n User Id Already Exist...";
+                file.close();
                 getch();
                 goto p;
             }
-            getline(file, i, '|');
-            getline(file, n, '|');
-            getline(file, f, '|');
-            getline(file, a, '|');
-            file >> p;
-            file.ignore(); // bỏ ký tự phân cách
-            getline(file, pa, '|');
-            getline(file, ph, '|');
-            file >> b;
         }
         file.close();
-        // nếu không bị trùng id thì ghi dữ liệu vào file
-        file.open("bank.txt", ios::app | ios::out);
-        file << id << '|' << name << '|' << fname << '|' << address << '|'<< pin << '|' << pass << '|' << phone << '|' << balance << "\n";
-        file.close();
+    }else{
+        // nếu mở ios::in thất bại, xóa failbit để còn mở lại ở dưới
+        file.clear();
     }
+    // --- ghi dữ liệu mới, giữ đúng format cách trắng như bạn muốn ---
+    file.open("bank.txt", ios::app | ios::out);
+    file << id << " " << name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << balance << "\n";
+    file.close();
     cout << "\n\n New User Account Created Successfully";
+    getch();
 }
+
 void bank::alrady_user(){
     system("cls");
     fstream file;
@@ -220,7 +201,7 @@ void bank::alrady_user(){
 }
 
 void bank::deposit_option(){
-    
+
 }
 int main()
 {
