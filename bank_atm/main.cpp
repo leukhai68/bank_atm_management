@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <limits>
+#include <sstream>
 using namespace std;
 
 class bank{
@@ -38,18 +39,18 @@ void bank::menu(){
         cout << "\n\n Email : ";
         cin >> email;
         cout << "\n\n Pin Code : ";
-        for(int i = 1; i <= 6; i++){
+        for(int i = 1; i <= 1; i++){
             ch = getch();
             pin += ch;
             cout << "*";
         }
         cout << "\n\n Password : ";
-        for(int i = 1; i <= 6; i++){
+        for(int i = 1; i <= 1; i++){
             ch = getch();
             pass += ch;
             cout << "*";
         }
-        if(email == "khaikevin" && pin == "123456" && pass == "123456"){
+        if(email == "1" && pin == "1" && pass == "1"){
             bank_quanli();
         }
         else{
@@ -92,6 +93,7 @@ void bank::bank_quanli(){
         alrady_user();
         break;
     case 3:
+        deposit_option();
         break;
     case 4:
         break;
@@ -173,19 +175,19 @@ void bank::alrady_user(){
     file.open("bank.txt", ios::in);
     if(!file){
         cout << "\n\n File Opening Error...";
-    }else{
+    } else {
         cout << "\n\n User ID: ";
         cin >> t_id;
-        string id, name, fname, address, pin, pass, phone, balance;
-        while(getline(file, id, '|')){
-            getline(file, name, '|');
-            getline(file, fname, '|');
-            getline(file, address, '|');
-            getline(file, pin, '|');
-            getline(file, pass, '|');
-            getline(file, phone, '|');
-            getline(file, balance, '\n'); // đọc đến hết dòng
-            if(t_id == id){
+        string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string id;
+            ss >> id; // đọc token đầu tiên = User ID
+            if(id == t_id){
+                string name, fname, address, pin, pass, phone;
+                float balance;
+                // đọc các trường còn lại
+                ss >> name >> fname >> address >> pin >> pass >> phone >> balance;
                 system("cls");
                 cout << "\n\n Already User Account";
                 cout << "\n\n User ID : " << id << "   Pin Code : " << pin << "   Password : " << pass;
@@ -201,7 +203,54 @@ void bank::alrady_user(){
 }
 
 void bank::deposit_option(){
+    fstream file, file1;
+    system("cls");
+    cout << "\n\n\t\t\t Deposit Amount Option";
 
+    string t_id;
+    float tiengui;
+    int found = 0;
+
+    file.open("bank.txt", ios::in);
+    if(!file){
+        cout << "\n\n File Opening Error..";
+        return;
+    }
+
+    cout << "\n\n User ID: ";
+    cin >> t_id;
+
+    // Ghi mới file tạm, KHÔNG dùng ios::app
+    file1.open("bank1.txt", ios::out | ios::trunc);
+
+    // Lặp theo điều kiện đọc thành công, không dùng eof()
+    while (file >> id >> name >> fname >> address >> pin >> pass >> phone >> balance){
+        if (t_id == id){
+            cout << "\n\n Amount For Deposit: ";
+            while(!(cin >> tiengui)){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Nhap lai so tien: ";
+            }
+            balance += tiengui;
+            found = 1;
+            cout << "\n\n\t\t\t Your Amount : " << tiengui << " Successfully Deposit";
+        }
+        // Ghi (đã cập nhật hoặc giữ nguyên) sang file tạm
+        file1 << id << " " << name << " " << fname << " " << address << " "
+              << pin << " " << pass << " " << phone << " " << balance << "\n";
+    }
+
+    file.close();
+    file1.close();
+
+    if(found){
+        remove("bank.txt");
+        rename("bank1.txt", "bank.txt");
+    }else{
+        remove("bank1.txt");
+        cout << "\n\n User ID Not Found...";
+    }
 }
 int main()
 {
