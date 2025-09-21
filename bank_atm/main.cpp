@@ -20,6 +20,7 @@ public:
     void new_user();
     void alrady_user();
     void deposit_option();
+    void withdraw_option();
 };
 void bank::menu(){
     p:
@@ -96,6 +97,7 @@ void bank::bank_quanli(){
         deposit_option();
         break;
     case 4:
+        withdraw_option();
         break;
     case 5:
         break;
@@ -206,23 +208,18 @@ void bank::deposit_option(){
     fstream file, file1;
     system("cls");
     cout << "\n\n\t\t\t Deposit Amount Option";
-
     string t_id;
     float tiengui;
     int found = 0;
-
     file.open("bank.txt", ios::in);
     if(!file){
         cout << "\n\n File Opening Error..";
         return;
     }
-
     cout << "\n\n User ID: ";
     cin >> t_id;
-
     // Ghi mới file tạm, KHÔNG dùng ios::app
     file1.open("bank1.txt", ios::out | ios::trunc);
-
     // Lặp theo điều kiện đọc thành công, không dùng eof()
     while (file >> id >> name >> fname >> address >> pin >> pass >> phone >> balance){
         if (t_id == id){
@@ -240,10 +237,8 @@ void bank::deposit_option(){
         file1 << id << " " << name << " " << fname << " " << address << " "
               << pin << " " << pass << " " << phone << " " << balance << "\n";
     }
-
     file.close();
     file1.close();
-
     if(found){
         remove("bank.txt");
         rename("bank1.txt", "bank.txt");
@@ -252,6 +247,57 @@ void bank::deposit_option(){
         cout << "\n\n User ID Not Found...";
     }
 }
+void bank::withdraw_option(){
+    fstream file, file1;
+    system("cls");
+    cout << "\n\n\t\t\t Withdraw Amount Option";
+    string t_id;
+    float tienrut;
+    bool foundUser = false;   // tách cờ: đã tìm thấy user
+    bool updated   = false;   // đã trừ tiền thành công
+    file.open("bank.txt", ios::in);
+    if(!file){
+        cout << "\n\n File Opening Error..";
+        return;
+    }
+    cout << "\n\n User ID: ";
+    cin >> t_id;
+    file1.open("bank1.txt", ios::out | ios::trunc);
+    // Lưu ý: đọc bằng >> sẽ hỏng nếu name/fname/address có dấu cách
+    while (file >> id >> name >> fname >> address >> pin >> pass >> phone >> balance){
+        if (t_id == id){
+            foundUser = true; // ĐÁNH DẤU NGAY KHI TÌM THẤY
+            cout << "\n\n Amount For Withdraw: ";
+            while(!(cin >> tienrut) || tienrut <= 0){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Nhap lai so tien (>0): ";
+            }
+            if(tienrut > balance){
+                cout << "\n\n\t\t\t Your Current Balance is not enough...";
+                // KHÔNG cập nhật balance, updated vẫn false
+            } else {
+                balance -= tienrut;
+                updated = true;
+                cout << "\n\n\t\t\t Your Amount : " << tienrut << " Successfully Withdraw";
+            }
+        }
+        // Ghi (đã cập nhật hoặc giữ nguyên) sang file tạm
+        file1 << id << " " << name << " " << fname << " " << address << " "
+              << pin << " " << pass << " " << phone << " " << balance << "\n";
+    }
+    file.close();
+    file1.close();
+    if(!foundUser){
+        remove("bank1.txt");
+        cout << "\n\n User ID Not Found...";
+        return;
+    }
+    // Có user: thay file gốc bằng file tạm (kể cả không đủ tiền thì dữ liệu không đổi)
+    remove("bank.txt");
+    rename("bank1.txt", "bank.txt");
+}
+
 int main()
 {
     bank obj;
