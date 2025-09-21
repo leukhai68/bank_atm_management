@@ -6,6 +6,10 @@
 #include <windows.h>
 #include <limits>
 #include <sstream>
+#include <ctime>
+//ios::out có nghĩa là bạn muốn mở một tệp ở chế độ đầu ra (để ghi dữ liệu vào tệp)
+//ios::in có nghĩa là bạn muốn mở một tệp ở chế độ nhập liệu (để trích xuất dữ liệu trong tệp)
+//ios::app có nghĩa là bạn muốn mở một tệp ở chế độ thêm (để ghi dữ liệu vào tệp sau byte cuối cùng. Bạn sử dụng chế độ này nếu muốn giữ nguyên dữ liệu hiện có trong tệp và không muốn ghi đè lên như khi sử dụng chế độ tệp ios::out).
 using namespace std;
 
 class bank{
@@ -21,6 +25,7 @@ public:
     void alrady_user();
     void deposit_option();
     void withdraw_option();
+    void insaoke();
 };
 void bank::menu(){
     p:
@@ -36,7 +41,7 @@ void bank::menu(){
         system("cls");
         string email, pin, pass;
         char ch;
-        cout << "\n\n\t\t\tLogin Account";
+        cout << "\n\n\t\t\tLogin Account Host";
         cout << "\n\n Email : ";
         cin >> email;
         cout << "\n\n Pin Code : ";
@@ -76,14 +81,8 @@ void bank::bank_quanli(){
     cout << "\n 2. Already User";  // tài khoản cũ
     cout << "\n 3. Deposit Option";  // gửi tiền
     cout << "\n 4. Withdraw Option"; // rút tiền
-    cout << "\n 5. Transfer Option"; // chuyển tiền
-    cout << "\n 6. Payment Option"; // thanh toán
-    cout << "\n 7. Search User Record";  // tìm kiếm tài khoản
-    cout << "\n 8. Edit User Record"; // chỉnh sửa tài khoản
-    cout << "\n 9. Delete User Record"; // xoá tài khoản
-    cout << "\n 10. Show All Records"; // hiển thị tất cả tài khoản
-    cout << "\n 11. Transfer Option"; // chuyển tiền
-    cout << "\n 12. Go Back"; // quay lại menu
+    cout << "\n 5. In sao ke"; // in sao kê
+    cout << "\n 6. Go Back"; // quay lại menu
     cout << "\n\n Enter your choice: ";
     cin >> choice;
     switch(choice){
@@ -100,20 +99,9 @@ void bank::bank_quanli(){
         withdraw_option();
         break;
     case 5:
+        insaoke();
         break;
     case 6:
-        break;
-    case 7:
-        break;
-    case 8:
-        break;
-    case 9:
-        break;
-    case 10:
-        break;
-    case 11:
-        break;
-    case 12:
         menu();
     default:
         cout << "\n\n Invalid...Try again!!!";
@@ -232,6 +220,19 @@ void bank::deposit_option(){
             balance += tiengui;
             found = 1;
             cout << "\n\n\t\t\t Your Amount : " << tiengui << " Successfully Deposit";
+            int stt = 0;
+            // tính số thứ tự
+            ifstream dem("saoke.txt");
+            string tien;
+            while(getline(dem, tien)) stt++;
+            dem.close();
+            // nhập ngày tháng năm
+            string date;
+            cin >> date;
+            // ghi 1 dong log stt id date tien note
+            ofstream log("saoke.txt", ios::app);
+            log << stt + 1 << " " << id << " " << date << " " << tiengui << " " << "Gui Tien" << "\n";
+            log.close();
         }
         // Ghi (đã cập nhật hoặc giữ nguyên) sang file tạm
         file1 << id << " " << name << " " << fname << " " << address << " "
