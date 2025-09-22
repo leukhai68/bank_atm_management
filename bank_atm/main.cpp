@@ -25,7 +25,7 @@ public:
     void alrady_user();
     void deposit_option();
     void withdraw_option();
-    void insaoke();
+    void print_statement();
 };
 void bank::menu(){
     p:
@@ -76,12 +76,12 @@ void bank::bank_quanli(){
     p:
     system("cls");
     int choice;
-    cout << "\n\n\t\t\tBank Management System";
+    cout << "\n\n\t\t\t Welcome to KhaiKevin Bank Management";
     cout << "\n\n 1. New User";  // tạo tài khoản
     cout << "\n 2. Already User";  // tài khoản cũ
     cout << "\n 3. Deposit Option";  // gửi tiền
     cout << "\n 4. Withdraw Option"; // rút tiền
-    cout << "\n 5. In sao ke"; // in sao kê
+    cout << "\n 5. Print Statement"; // in sao kê
     cout << "\n 6. Go Back"; // quay lại menu
     cout << "\n\n Enter your choice: ";
     cin >> choice;
@@ -99,7 +99,7 @@ void bank::bank_quanli(){
         withdraw_option();
         break;
     case 5:
-        insaoke();
+        print_statement();
         break;
     case 6:
         menu();
@@ -148,6 +148,15 @@ void bank::new_user(){
         // nếu mở ios::in thất bại, xóa failbit để còn mở lại ở dưới
         file.clear();
     }
+    for (size_t i = 0; i < name.size(); ++i){
+        if (name[i] == ' ') name[i] = '_';
+    }
+    for (size_t i = 0; i < fname.size(); ++i){
+        if (fname[i] == ' ') fname[i] = '_';
+    }
+    for (size_t i = 0; i < address.size(); ++i){
+        if (address[i] == ' ') address[i] = '_';
+    }
     // --- ghi dữ liệu mới, giữ đúng format cách trắng như bạn muốn ---
     file.open("bank.txt", ios::app | ios::out);
     file << id << " " << name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << balance << "\n";
@@ -180,7 +189,7 @@ void bank::alrady_user(){
                 ss >> name >> fname >> address >> pin >> pass >> phone >> balance;
                 system("cls");
                 cout << "\n\n Already User Account";
-                cout << "\n\n User ID : " << id << "   Pin Code : " << pin << "   Password : " << pass;
+                cout << "\n\n User ID : " << id << "   Ten : " << name << "   Pin Code : " << pin << "   Password : " << pass;
                 found = 1;
                 break;
             }
@@ -227,11 +236,25 @@ void bank::deposit_option(){
             while(getline(dem, tien)) stt++;
             dem.close();
             // nhập ngày tháng năm
-            string date;
-            cin >> date;
+            time_t now = time(0);
+            tm t = *localtime(&now);
+            int nam = 1900 + t.tm_year;
+            int thang = 1 + t.tm_mon;
+            int ngay = t.tm_mday;
+            string ngay1, thang1;
+            if(ngay < 10){
+                ngay1 = "0" + to_string(ngay);
+            } else {
+                ngay1 = to_string(ngay);
+            }
+            if(thang < 10){
+                thang1 = "0" + to_string(thang);
+            } else {
+                thang1 = to_string(thang);
+            }
             // ghi 1 dong log stt id date tien note
             ofstream log("saoke.txt", ios::app);
-            log << stt + 1 << " " << id << " " << date << " " << tiengui << " " << "Gui Tien" << "\n";
+            log << stt + 1 << " " << id << " " << ngay1 << "/" << thang1 << "/" << nam << " " <<  tiengui << " " << "Gui_Tien" << "\n";
             log.close();
         }
         // Ghi (đã cập nhật hoặc giữ nguyên) sang file tạm
@@ -281,6 +304,33 @@ void bank::withdraw_option(){
                 balance -= tienrut;
                 updated = true;
                 cout << "\n\n\t\t\t Your Amount : " << tienrut << " Successfully Withdraw";
+                 int stt = 0;
+             // tính số thứ tự
+              ifstream dem("saoke.txt");
+               string tien;
+                while(getline(dem, tien)) stt++;
+                dem.close();
+                // nhập ngày tháng năm
+                time_t now = time(0);
+                tm t = *localtime(&now);
+                int nam = 1900 + t.tm_year;
+                int thang = 1 + t.tm_mon;
+                int ngay = t.tm_mday;
+                string ngay1, thang1;
+                if(ngay < 10){
+                    ngay1 = "0" + to_string(ngay);
+                }else{
+                    ngay1 = to_string(ngay);
+                }
+                if(thang < 10){
+                 thang1 = "0" + to_string(thang);
+                }else{
+                thang1 = to_string(thang);
+                }
+                 // ghi 1 dong log stt id date tien note
+                ofstream log("saoke.txt", ios::app);
+                log << stt + 1 << " " << id << " " << ngay1 << "/" << thang1 << "/" << nam << " " <<  tienrut << " " << "Rut_Tien" << "\n";
+                log.close();
             }
         }
         // Ghi (đã cập nhật hoặc giữ nguyên) sang file tạm
@@ -297,6 +347,44 @@ void bank::withdraw_option(){
     // Có user: thay file gốc bằng file tạm (kể cả không đủ tiền thì dữ liệu không đổi)
     remove("bank.txt");
     rename("bank1.txt", "bank.txt");
+}
+
+void bank::print_statement(){
+    system("cls");
+    cout << "\n\n\t\t\t Print Statment Option";
+    cout << "\n\n User Id: ";
+    string t_id;
+    cin >> t_id;
+    ifstream fin("saoke.txt");
+    if(!fin){
+        cout << "\n\n Error in opening file...";
+        return;
+    }
+    cout << "\n\n\t\tSao Ke Tai Khoan ID: " << t_id << "\n";
+    cout << "STT   NgayThangNam     SoTien         Note\n";
+    cout << "-----------------------------------------------\n";
+    string line;
+    int found = 0;
+    while (getline(fin, line)) {
+        if(line.empty()) continue;
+        // parse từng dòng
+        stringstream ss(line);
+        int stt; string uid, date, note; double amount;
+        if(!(ss >> stt >> uid >> date >> amount >> note)){
+            // Dòng sai định dạng -> in ra để bạn kiểm tra
+            cout << "[LOI FORMAT] " << line << "\n";
+            continue;
+        }
+        if(uid == t_id){
+            found = 1;
+            // in có canh lề cơ bản
+            cout << stt << "     " << date << "\t" << amount << "           " << note << "\n";
+        }
+    }
+    if(!found){
+        cout << "\nKhong co giao dich nao cho User ID nay!\n";
+    }
+    fin.close();
 }
 
 int main()
