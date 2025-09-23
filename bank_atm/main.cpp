@@ -7,6 +7,7 @@
 #include <limits>
 #include <sstream>
 #include <ctime>
+#include <iomanip>
 //ios::out có nghĩa là bạn muốn mở một tệp ở chế độ đầu ra (để ghi dữ liệu vào tệp)
 //ios::in có nghĩa là bạn muốn mở một tệp ở chế độ nhập liệu (để trích xuất dữ liệu trong tệp)
 //ios::app có nghĩa là bạn muốn mở một tệp ở chế độ thêm (để ghi dữ liệu vào tệp sau byte cuối cùng. Bạn sử dụng chế độ này nếu muốn giữ nguyên dữ liệu hiện có trong tệp và không muốn ghi đè lên như khi sử dụng chế độ tệp ios::out).
@@ -14,7 +15,7 @@ using namespace std;
 
 class bank{
 private:
-    int pin;
+    long long pin;
     float balance;
     string id, pass, name, fname, address, phone;
 
@@ -34,8 +35,14 @@ void bank::menu(){
     cout << "\n\n 1.Bank Management";
     cout << "\n 2.Exit";
     cout << "\n\n Enter your choice : ";
-    int choice;
-    cin >> choice;
+    long long choice;
+    if(!(cin >> choice)){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "\n\n Invalid... Try again!!!";
+        getch();
+        goto p;
+    }
     switch(choice){
     case 1:{
         system("cls");
@@ -45,13 +52,13 @@ void bank::menu(){
         cout << "\n\n Email : ";
         cin >> email;
         cout << "\n\n Pin Code : ";
-        for(int i = 1; i <= 1; i++){
+        for(long long i = 1; i <= 1; i++){
             ch = getch();
             pin += ch;
             cout << "*";
         }
         cout << "\n\n Password : ";
-        for(int i = 1; i <= 1; i++){
+        for(long long i = 1; i <= 1; i++){
             ch = getch();
             pass += ch;
             cout << "*";
@@ -61,6 +68,8 @@ void bank::menu(){
         }
         else{
             cout << "\n\n Your email, pin, pass is wrong !!!";
+            cout << "\n\n Press any to return !!!";
+            getch();
         }
         break;
     }
@@ -68,6 +77,8 @@ void bank::menu(){
         exit(0);
     default:
         cout << "\n\n Invalid...Try again!!!";
+        getch();
+        break;
     }
     getch(); // thao tác nhập
     goto p; // quay lại điểm đánh dấu
@@ -75,7 +86,7 @@ void bank::menu(){
 void bank::bank_quanli(){
     p:
     system("cls");
-    int choice;
+    long long choice;
     cout << "\n\n\t\t\t Welcome to KhaiKevin Bank Management";
     cout << "\n\n 1. New User";  // tạo tài khoản
     cout << "\n 2. Already User";  // tài khoản cũ
@@ -134,7 +145,7 @@ void bank::new_user(){
     file.open("bank.txt", ios::in);
     if(file){
         string i;
-        while (file >> i){ // lấy đúng token đầu là ID
+        while (getline(file, i)){ // lấy đúng token đầu là ID
             file.ignore(numeric_limits<streamsize>::max(), '\n'); // bỏ phần còn lại (tên/địa chỉ...)
             if(i == id){
                 cout << "\n\n User Id Already Exist...";
@@ -159,7 +170,7 @@ void bank::new_user(){
     }
     // --- ghi dữ liệu mới, giữ đúng format cách trắng như bạn muốn ---
     file.open("bank.txt", ios::app | ios::out);
-    file << id << " " << name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << balance << "\n";
+    file << id << " " << name << " " << fname << " " << address << " " << pin << " " << pass << " " << phone << " " << fixed << setprecision(0) << balance << "\n";
     file.close();
     cout << "\n\n New User Account Created Successfully";
     getch();
@@ -169,7 +180,7 @@ void bank::alrady_user(){
     system("cls");
     fstream file;
     string t_id;
-    int found = 0;
+    long long found = 0;
     cout << "\n\n\t\t\tAlready User Account";
     file.open("bank.txt", ios::in);
     if(!file){
@@ -207,7 +218,7 @@ void bank::deposit_option(){
     cout << "\n\n\t\t\t Deposit Amount Option";
     string t_id;
     float tiengui;
-    int found = 0;
+    long long found = 0;
     file.open("bank.txt", ios::in);
     if(!file){
         cout << "\n\n File Opening Error..";
@@ -228,8 +239,8 @@ void bank::deposit_option(){
             }
             balance += tiengui;
             found = 1;
-            cout << "\n\n\t\t\t Your Amount : " << tiengui << " Successfully Deposit";
-            int stt = 0;
+            cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tiengui << " Successfully Deposit";
+            long long stt = 0;
             // tính số thứ tự
             ifstream dem("saoke.txt");
             string tien;
@@ -238,9 +249,9 @@ void bank::deposit_option(){
             // nhập ngày tháng năm
             time_t now = time(0);
             tm t = *localtime(&now);
-            int nam = 1900 + t.tm_year;
-            int thang = 1 + t.tm_mon;
-            int ngay = t.tm_mday;
+            long long nam = 1900 + t.tm_year;
+            long long thang = 1 + t.tm_mon;
+            long long ngay = t.tm_mday;
             string ngay1, thang1;
             if(ngay < 10){
                 ngay1 = "0" + to_string(ngay);
@@ -303,8 +314,8 @@ void bank::withdraw_option(){
             } else {
                 balance -= tienrut;
                 updated = true;
-                cout << "\n\n\t\t\t Your Amount : " << tienrut << " Successfully Withdraw";
-                 int stt = 0;
+                cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tienrut << " Successfully Withdraw";
+                 long long stt = 0;
              // tính số thứ tự
               ifstream dem("saoke.txt");
                string tien;
@@ -313,9 +324,9 @@ void bank::withdraw_option(){
                 // nhập ngày tháng năm
                 time_t now = time(0);
                 tm t = *localtime(&now);
-                int nam = 1900 + t.tm_year;
-                int thang = 1 + t.tm_mon;
-                int ngay = t.tm_mday;
+                long long nam = 1900 + t.tm_year;
+                long long thang = 1 + t.tm_mon;
+                long long ngay = t.tm_mday;
                 string ngay1, thang1;
                 if(ngay < 10){
                     ngay1 = "0" + to_string(ngay);
@@ -364,12 +375,12 @@ void bank::print_statement(){
     cout << "STT   NgayThangNam     SoTien         Note\n";
     cout << "-----------------------------------------------\n";
     string line;
-    int found = 0;
+    long long found = 0;
     while (getline(fin, line)) {
         if(line.empty()) continue;
         // parse từng dòng
         stringstream ss(line);
-        int stt; string uid, date, note; double amount;
+        long long stt; string uid, date, note; double amount;
         if(!(ss >> stt >> uid >> date >> amount >> note)){
             // Dòng sai định dạng -> in ra để bạn kiểm tra
             cout << "[LOI FORMAT] " << line << "\n";
