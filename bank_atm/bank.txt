@@ -1,1 +1,2 @@
-PTIT1 leu_quang_khai leu_van_phong doi_4_xa_lien_phuong 123456 123456 1212 1000000
+PTIT1 leu_quang_khai leu_van_phong doi_4_xa_lien_phuong 123456 123456 1212 1e+06
+101 leu_quang_khai leu_van_phong doi_4_xa_lien_phuong 123456 123456 0123 134510
