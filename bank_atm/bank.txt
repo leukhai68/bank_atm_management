@@ -1,7 +1,1 @@
-100 nguyen_trung_khai nguyen_van_dung 1 111111 111111 001 221
-102 Long_Dan Quang_Huy Doi_4_Xa_Lien_Phuong 123456 123456 012 5.00005e+09
-ngo khai_1_2_3 khai tan_sang_tan_trieu_ha_dong 123456 123456 011 10101
-2011 phanh_ngu leu_khai de_sonh_hong 111111 123 011111 600000
-PTIT1 Nguyen_Hai_Long Leu_Quang_Khai Vinh_Phuc 123456 longdan123 0123 12000
-Khai KKK k doi_4_xa_lien_phuong 123456 123456 0388709879 4e+09
-2011 dƒsdasdaddada  dasdasdadad dƒddad 0   0
+PTIT1 leu_quang_khai leu_van_phong doi_4_xa_lien_phuong 123456 123456 1212 1000000
