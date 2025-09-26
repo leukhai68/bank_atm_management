@@ -1,1 +1,2 @@
-điểm
+
+        string uid, date, note;

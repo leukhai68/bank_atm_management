@@ -19,7 +19,7 @@ class bank
 {
 private:
     long long pin;
-    double balance;
+    long long balance;
     string id, pass, name, fname, address, phone;
     int change = 1;
 
@@ -160,7 +160,19 @@ void bank::bank_quanli()
         else cout << "\n\n Không hợp lệ... Thử lại!!!";
     }
 }
-
+void chuanhoa(string &s){
+    stringstream ss(s);
+    string token , res = "";
+    while(ss >> token){
+        token[0] = toupper(token[0]);
+        for(int i = 1; i < token.size(); i++){
+            token[i] = tolower(token[i]);
+        }
+        res += token + " ";
+    }
+    if(!res.empty()) res.pop_back(); // bỏ space cuối
+    s = res;
+}
 void bank::new_user()
 {
     p:
@@ -195,14 +207,17 @@ void bank::new_user()
     else cout << "\n\n\t\tTên : ";
     cin >> ws;
     getline(cin, name);
+    chuanhoa(name);
     if(change) cout << "\n\n Father Name : ";
     else cout << "\n\n Tên bố : ";
     cin >> ws;
     getline(cin, fname);
+    chuanhoa(fname);
     if(change) cout << "\n\n\t\tAddress : ";
     else cout << "\n\n\t\tĐịa chỉ : ";
     cin >> ws;
     getline(cin, address);
+    chuanhoa(address);
     if(change) cout << "\n\n Pin Code 6 numbers : ";
     else cout << "\n\n Mã Pin 6 số : ";
     cin >> pin;
@@ -276,7 +291,7 @@ void bank::alrady_user()
             if (id == t_id)
             {
                 string name, fname, address, pin, pass, phone;
-                float balance;
+                long long balance;
                 // đọc các trường còn lại
                 ss >> name >> fname >> address >> pin >> pass >> phone >> balance;
                 system("cls");
@@ -304,7 +319,7 @@ void bank::deposit_option()
     if(change) cout << "\n\n\t\t\t Deposit Amount Option";
     else cout << "\n\n\t\t\t Gửi tiền";
     string t_id;
-    float tiengui;
+    long long tiengui;
     long long found = 0;
     file.open("bank.txt", ios::in);
     if (!file)
@@ -334,8 +349,13 @@ void bank::deposit_option()
             }
             balance += tiengui;
             found = 1;
-            if(change) cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tiengui << " Successfully Deposit";
-            else cout << "\n\n\t\t\t Số tiền của bạn : " << fixed << setprecision(0) << tiengui << " Gửi tiền thành công";
+            if(change) {
+                cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tiengui << " Successfully Deposit";
+                cout << "\n\n\t\t\t Your Current Balance : " << fixed << setprecision(0) << balance;
+            }else{ 
+                cout << "\n\n\t\t\t Số tiền của bạn : " << fixed << setprecision(0) << tiengui << " Gửi tiền thành công";
+                cout << "\n\n\t\t\t Số dư hiện tại của bạn : " << fixed << setprecision(0) << balance;
+            }
             long long stt = 0;
             // tính số thứ tự
             ifstream dem("saoke.txt");
@@ -395,7 +415,7 @@ void bank::withdraw_option()
     if(change) cout << "\n\n\t\t\t Withdraw Amount Option";
     else cout << "\n\n\t\t\t Rút tiền";
     string t_id;
-    float tienrut;
+    long long tienrut;
     bool foundUser = false; // tách cờ: đã tìm thấy user
     bool updated = false;   // đã trừ tiền thành công
     file.open("bank.txt", ios::in);
@@ -403,7 +423,7 @@ void bank::withdraw_option()
     {
         if(change) cout << "\n\n File Opening Error..";
         else cout << "\n\n Lỗi mở file...";
-        return; 
+        return;
     }
     if(change) cout << "\n\n User ID: ";
     else cout << "\n\n ID người dùng: ";
@@ -434,8 +454,13 @@ void bank::withdraw_option()
             {
                 balance -= tienrut;
                 updated = true;
-                if(change) cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tienrut << " Successfully Withdraw";
-                else cout << "\n\n\t\t\t Số tiền của bạn : " << fixed << setprecision(0) << tienrut << " Rút tiền thành công";
+                if(change){
+                    cout << "\n\n\t\t\t Your Amount : " << fixed << setprecision(0) << tienrut << " Successfully Withdraw";
+                    cout << "\n\n\t\t\t Your Current Balance : " << fixed << setprecision(0) << balance;
+                }else{
+                    cout << "\n\n\t\t\t Số tiền của bạn : " << fixed << setprecision(0) << tienrut << " Rút tiền thành công";
+                    cout << "\n\n\t\t\t Số dư hiện tại của bạn : " << fixed << setprecision(0) << balance;
+                }
                 long long stt = 0;
                 // tính số thứ tự
                 ifstream dem("saoke.txt");
@@ -488,12 +513,14 @@ void bank::withdraw_option()
     rename("bank1.txt", "bank.txt");
 }
 
+#include <iomanip>
+
 void bank::print_statement()
 {
     system("cls");
     if(change){
-    cout << "\n\n\t\t\t Print Statment Option";
-    cout << "\n\n User Id: ";
+        cout << "\n\n\t\t\t Print Statment Option";
+        cout << "\n\n User Id: ";
     }else{
         cout << "\n\n\t\t\t In sao kê";
         cout << "\n\n Id người dùng: ";
@@ -507,57 +534,85 @@ void bank::print_statement()
         else cout << "\n\n Lỗi khi mở file...";
         return;
     }
+    
+    // Tiêu đề
     if(change == 0){
         cout << "\n\n\t\tSao Ke Tai Khoan ID: " << t_id << "\n";
-        cout << "STT   Ngày Tháng Năm     Số tiền       Ghi Chú\n";
     }else{
         cout << "\n\n\t\tStatement for Account ID: " << t_id << "\n";
-        cout << "No.       Date         Amount         Note\n";
     }
-    cout << "-----------------------------------------------\n";
+    
+    // Bảng đơn giản với ký tự ASCII
+    cout << "+------+-------------+----------------------+----------+\n";
+    
+    // Tiêu đề cột
+    if(change == 0){
+        cout << "| " << left << setw(4) << "STT" << "| "
+             << setw(11) << "TGIAN" << "| "
+             << setw(20) << "So tien" << "| "
+             << setw(8) << "Ghi Chu" << "     |\n";
+    }else{
+        cout << "| " << left << setw(4) << "No." << "| "
+             << setw(11) << "Date" << "| "
+             << setw(20) << "Amount" << "| "
+             << setw(8) << "Note" << "     |\n";
+    }
+    
+    cout << "+------+-------------+----------------------+----------+\n";
+    
     auto localnote = [&](const string& code) -> string{
         if(change){
             if(code == "DEPOSIT") return "Deposit";
             if(code == "WITHDRAW") return "Withdraw";
             return code;
         }else{
-            if(code == "DEPOSIT") return "Gửi_tiền";
-            if(code == "WITHDRAW") return "Rút_tiền";
+            if(code == "DEPOSIT") return "Gui tien";
+            if(code == "WITHDRAW") return "Rut tien";
             return code;
         }
     };
+    
     string line;
     long long found = 0;
+    int stt_rieng = 0;
     while (getline(fin, line))
     {
         if (line.empty())
             continue;
-        // parse từng dòng
+            
         stringstream ss(line);
         long long stt;
         string uid, date, note;
-        double amount;
+        long long amount;
         if (!(ss >> stt >> uid >> date >> amount >> note))
         {
-            // Dòng sai định dạng -> in ra để bạn kiểm tra
-            if(change) cout << "[Lỗi format] " << line << "\n";
             continue;
         }
         if (uid == t_id)
         {
+            stt_rieng++;
             found = 1;
-            // in có canh lề cơ bản
-            cout << stt << "     " << date << "\t" << amount << "           " << note << "\n";
+            
+            // In dữ liệu với căn lề
+            cout << "| " << left << setw(4) << stt_rieng << "| "
+                 << setw(11) << date << "| "
+                 << setw(20) << amount << "| "
+                 << setw(8) << localnote(note) << "     |\n";
         }
     }
-    if (!found)
-    {
-        if(change == 0) cout << "\nKhông có giao dịch trong ID người dùng này!\n";
-        else cout << "\nNo transactions for this User ID!\n";
+    
+    // Đường kẻ cuối
+    if (found) {
+        cout << "+------+-------------+----------------------+----------+\n";
+    } else {
+        if(change == 0) 
+            cout << "|               Khong co giao dich cho ID nay!               |\n";
+        else 
+            cout << "|               No transactions for this ID!               |\n";
+        cout << "+----------------------------------------------------------+\n";
     }
     fin.close();
 }
-
 int main()
 {
     #ifdef _WIN32
